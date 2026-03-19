@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Quadratic Equations — The Ultimate Brain Guide</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #12121a;
+      --border: #1e1e2e;
+      --accent: #f5c842;
+      --accent2: #ff6b6b;
+      --accent3: #6bffb8;
+      --text: #e8e8f0;
+      --muted: #7070a0;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Space Mono', monospace;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    /* Animated grid background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(245,200,66,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(245,200,66,0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .noise {
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.5;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ── HERO ── */
+    header {
+      padding: 80px 0 60px;
+      text-align: center;
+      position: relative;
+    }
+
+    .tag {
+      display: inline-block;
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      padding: 4px 14px;
+      border-radius: 2px;
+      margin-bottom: 28px;
+      animation: fadeUp 0.6s ease both;
+    }
+
+    h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(42px, 8vw, 80px);
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -0.03em;
+      animation: fadeUp 0.6s 0.1s ease both;
+    }
+
+    h1 span.yellow { color: var(--accent); }
+    h1 span.red { color: var(--accent2); }
+
+    .subtitle {
+      margin-top: 20px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.7;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+      animation: fadeUp 0.6s 0.2s ease both;
+    }
+
+    /* floating math symbols */
+    .floaters {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .floater {
+      position: absolute;
+      font-family: 'Syne', sans-serif;
+      font-size: 14px;
+      color: var(--accent);
+      opacity: 0.12;
+      animation: float linear infinite;
+    }
+
+    @keyframes float {
+      from { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+      10% { opacity: 0.12; }
+      90% { opacity: 0.12; }
+      to { transform: translateY(-20vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* ── SECTIONS ── */
+    section {
+      padding: 48px 0;
+      border-top: 1px solid var(--border);
+      animation: fadeUp 0.7s ease both;
+    }
+
+    .section-label {
+      font-size: 10px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent3);
+      margin-bottom: 16px;
+    }
+
+    h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+
+    p { color: #b0b0c8; line-height: 1.8; font-size: 14px; margin-bottom: 14px; }
+
+    /* Formula box */
+    .formula-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      padding: 24px 28px;
+      margin: 24px 0;
+      font-family: 'Space Mono', monospace;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .formula-box::after {
+      content: '';
+      position: absolute;
+      top: 0; right: 0;
+      width: 80px; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(245,200,66,0.03));
+    }
+
+    .formula {
+      font-size: 20px;
+      color: var(--accent);
+      letter-spacing: 0.05em;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .formula-desc {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* Steps grid */
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .step {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 20px;
+      position: relative;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .step:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .step-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 36px;
+      font-weight: 800;
+      color: var(--accent);
+      opacity: 0.15;
+      position: absolute;
+      top: 10px;
+      right: 14px;
+    }
+
+    .step h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 14px;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+
+    .step p { font-size: 13px; margin: 0; }
+
+    /* ── SOLVER ── */
+    .solver {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 32px;
+      margin-top: 24px;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex: 1;
+      min-width: 80px;
+    }
+
+    label {
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    input[type="number"] {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: 'Space Mono', monospace;
+      font-size: 16px;
+      padding: 10px 14px;
+      outline: none;
+      transition: border-color 0.2s;
+      width: 100%;
+    }
+
+    input[type="number"]:focus { border-color: var(--accent); }
+
+    .btn-solve {
+      background: var(--accent);
+      color: #000;
+      border: none;
+      font-family: 'Syne', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      padding: 12px 28px;
+      cursor: pointer;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+
+    .btn-solve:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(245,200,66,0.3);
+    }
+
+    .result-box {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 18px 20px;
+      font-family: 'Space Mono', monospace;
+      font-size: 14px;
+      min-height: 60px;
+      color: var(--accent3);
+      display: none;
+      line-height: 1.8;
+    }
+
+    .result-box.show { display: block; }
+
+    /* ── DISCRIMINANT TABLE ── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      font-size: 13px;
+    }
+
+    th {
+      font-family: 'Syne', sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-align: left;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      color: #b0b0c8;
+    }
+
+    tr:hover td { background: var(--surface); }
+
+    td:first-child { color: var(--accent); font-weight: 700; }
+
+    /* ── MAGIC BUTTON ── */
+    .magic-section {
+      padding: 80px 0;
+      text-align: center;
+      border-top: 1px solid var(--border);
+    }
+
+    .magic-label {
+      font-size: 11px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent2);
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    .magic-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+
+    .magic-sub {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 40px;
+    }
+
+    .brain-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      background: linear-gradient(135deg, #ff6b6b, #ff8e53);
+      color: #fff;
+      border: none;
+      font-family: 'Syne', sans-serif;
+      font-size: 18px;
+      font-weight: 800;
+      padding: 20px 48px;
+      cursor: pointer;
+      letter-spacing: 0.02em;
+      transition: transform 0.2s, box-shadow 0.2s;
+      border-radius: 2px;
+      text-transform: uppercase;
+    }
+
+    .brain-btn:hover {
+      transform: scale(1.04) translateY(-3px);
+      box-shadow: 0 16px 48px rgba(255,107,107,0.5);
+    }
+
+    .brain-btn:active { transform: scale(0.97); }
+
+    .brain-icon {
+      font-size: 28px;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+    }
+
+    /* Ripple on click */
+    .brain-btn::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 2px;
+      background: rgba(255,255,255,0.2);
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+
+    .brain-btn:active::after { opacity: 1; }
+
+    /* "loading" overlay */
+    .transfer-overlay {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s;
+    }
+
+    .transfer-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .transfer-text {
+      font-family: 'Syne', sans-serif;
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--accent);
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .transfer-sub {
+      font-family: 'Space Mono', monospace;
+      font-size: 13px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .progress-bar {
+      width: 300px;
+      height: 4px;
+      background: var(--border);
+      margin-top: 32px;
+      overflow: hidden;
+      border-radius: 2px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--accent);
+      width: 0%;
+      transition: width 0.05s linear;
+      border-radius: 2px;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 0;
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* highlight */
+    .hl { color: var(--accent); }
+    .hl2 { color: var(--accent2); }
+    .hl3 { color: var(--accent3); }
+  </style>
+</head>
+<body>
+
+<div class="noise"></div>
+
+<!-- Floating math symbols -->
+<div class="floaters" id="floaters"></div>
+
+<!-- Transfer overlay -->
+<div class="transfer-overlay" id="overlay">
+  <div class="transfer-text">⚡ Transferring Knowledge...</div>
+  <div class="transfer-sub" id="overlayStatus">Initializing neural uplink...</div>
+  <div class="progress-bar">
+    <div class="progress-fill" id="progressFill"></div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- HEADER -->
+  <header>
+    <div class="tag">Class 11 · JEE Maths · Zero to Hero</div>
+    <h1>
+      <span class="yellow">ax²</span> + <span class="red">bx</span> + c = <span class="yellow">0</span>
+    </h1>
+    <p class="subtitle">Everything you need to know about quadratic equations. Derivations, solver, discriminant table — and a very special button at the bottom.</p>
+  </header>
+
+  <!-- WHAT IS A QUADRATIC -->
+  <section>
+    <p class="section-label">01 — The Basics</p>
+    <h2>What <em>is</em> a Quadratic?</h2>
+    <p>A quadratic equation is any polynomial equation of degree 2. The standard form is <span class="hl">ax² + bx + c = 0</span>, where <span class="hl">a ≠ 0</span>. If a were 0, it'd just be a boring linear equation — no drama, no roots worth writing home about.</p>
+    <p>The graph of a quadratic is a <span class="hl3">parabola</span>. It opens upward when a > 0 (happy face 🙂) and downward when a < 0 (sad face 🙁). Where the parabola crosses the x-axis? Those are your roots.</p>
+    <div class="formula-box">
+      <span class="formula">f(x) = ax² + bx + c</span>
+      <span class="formula-desc">a, b, c ∈ ℝ, a ≠ 0 — the three coefficients that define everything</span>
+    </div>
+  </section>
+
+  <!-- QUADRATIC FORMULA -->
+  <section>
+    <p class="section-label">02 — The Formula</p>
+    <h2>The Quadratic Formula</h2>
+    <p>Derived by completing the square on the standard form. This single formula gives you <em>both</em> roots for any quadratic — no guessing, no factoring struggles.</p>
+    <div class="formula-box">
+      <span class="formula">x = (−b ± √(b² − 4ac)) / 2a</span>
+      <span class="formula-desc">The ± gives you two roots: x₁ with + and x₂ with −</span>
+    </div>
+    <p>The term inside the square root, <span class="hl">b² − 4ac</span>, is the <span class="hl2">discriminant (Δ)</span>. It's the oracle — tells you everything about the nature of roots before you even solve.</p>
+  </section>
+
+  <!-- DISCRIMINANT TABLE -->
+  <section>
+    <p class="section-label">03 — The Discriminant</p>
+    <h2>Reading the Discriminant (Δ = b² − 4ac)</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Condition</th>
+          <th>Nature of Roots</th>
+          <th>What it means</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Δ > 0</td>
+          <td>Two distinct real roots</td>
+          <td>Parabola crosses x-axis at 2 points</td>
+        </tr>
+        <tr>
+          <td>Δ = 0</td>
+          <td>One repeated real root</td>
+          <td>Parabola just touches the x-axis (tangent)</td>
+        </tr>
+        <tr>
+          <td>Δ < 0</td>
+          <td>No real roots (complex pair)</td>
+          <td>Parabola floats above/below x-axis entirely</td>
+        </tr>
+        <tr>
+          <td>Δ > 0, perfect square</td>
+          <td>Two rational roots</td>
+          <td>Factorable over integers — easy mode</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- SUM AND PRODUCT -->
+  <section>
+    <p class="section-label">04 — Vieta's Formulas</p>
+    <h2>Sum & Product of Roots</h2>
+    <p>If α and β are the two roots, Vieta's formulas let you relate them to the coefficients without solving the equation. Insanely useful for JEE problems.</p>
+    <div class="formula-box">
+      <span class="formula">α + β = −b/a</span>
+      <span class="formula-desc">Sum of roots</span>
+    </div>
+    <div class="formula-box">
+      <span class="formula">α · β = c/a</span>
+      <span class="formula-desc">Product of roots</span>
+    </div>
+    <p>So if you need to form a quadratic with given roots α and β, just write: <span class="hl">x² − (α+β)x + αβ = 0</span>. Done.</p>
+  </section>
+
+  <!-- HOW TO SOLVE -->
+  <section>
+    <p class="section-label">05 — Methods</p>
+    <h2>Ways to Solve a Quadratic</h2>
+    <div class="steps">
+      <div class="step">
+        <span class="step-num">1</span>
+        <h3>Factorization</h3>
+        <p>Split the middle term. Works cleanly when roots are rational integers. Fast if you spot it.</p>
+      </div>
+      <div class="step">
+        <span class="step-num">2</span>
+        <h3>Completing the Square</h3>
+        <p>Convert to (x + p)² = q form. The method behind the formula itself. Good for derivations.</p>
+      </div>
+      <div class="step">
+        <span class="step-num">3</span>
+        <h3>Quadratic Formula</h3>
+        <p>The nuclear option. Always works, no exceptions. Plug a, b, c → get roots. That's it.</p>
+      </div>
+      <div class="step">
+        <span class="step-num">4</span>
+        <h3>Graphical Method</h3>
+        <p>Plot f(x) = ax² + bx + c. Where it touches the x-axis are your roots. Great for intuition.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SOLVER -->
+  <section>
+    <p class="section-label">06 — Live Solver</p>
+    <h2>Solve It Right Here</h2>
+    <p>Enter your a, b, c coefficients below. Discriminant + roots computed instantly.</p>
+    <div class="solver">
+      <div class="input-row">
+        <div class="input-group">
+          <label>a (x² coeff)</label>
+          <input type="number" id="coefA" placeholder="e.g. 1" />
+        </div>
+        <div class="input-group">
+          <label>b (x coeff)</label>
+          <input type="number" id="coefB" placeholder="e.g. -5" />
+        </div>
+        <div class="input-group">
+          <label>c (constant)</label>
+          <input type="number" id="coefC" placeholder="e.g. 6" />
+        </div>
+        <div style="display:flex;align-items:flex-end;">
+          <button class="btn-solve" onclick="solve()">Solve →</button>
+        </div>
+      </div>
+      <div class="result-box" id="result"></div>
+    </div>
+  </section>
+
+  <!-- MAGIC BUTTON -->
+  <div class="magic-section">
+    <span class="magic-label">✦ Exclusive Feature ✦</span>
+    <h2 class="magic-title">🧠 Direct Brain Transfer™</h2>
+    <p class="magic-sub">Why study when you can just... upload quadratics directly into your cerebral cortex?<br>100% scientifically validated. Definitely.</p>
+    <button class="brain-btn" onclick="transferKnowledge()">
+      <span class="brain-icon">🧠</span>
+      Transfer Knowledge to Brain
+    </button>
+  </div>
+
+</div>
+
+<footer>
+  <div class="container">
+    <p>Made for curious minds · quadratics.vercel.app · ax² + bx + c = 0 forever</p>
+  </div>
+</footer>
+
+<script>
+  // ── Floating symbols ──
+  const symbols = ['x²', '±', '√', 'Δ', 'α', 'β', '∈', 'ax²', 'b²', '0', '∞', 'ℝ'];
+  const floaters = document.getElementById('floaters');
+  for (let i = 0; i < 18; i++) {
+    const el = document.createElement('div');
+    el.className = 'floater';
+    el.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+    el.style.left = Math.random() * 100 + 'vw';
+    el.style.animationDuration = (12 + Math.random() * 18) + 's';
+    el.style.animationDelay = (Math.random() * 20) + 's';
+    el.style.fontSize = (10 + Math.random() * 14) + 'px';
+    floaters.appendChild(el);
+  }
+
+  // ── Solver ──
+  function solve() {
+    const a = parseFloat(document.getElementById('coefA').value);
+    const b = parseFloat(document.getElementById('coefB').value);
+    const c = parseFloat(document.getElementById('coefC').value);
+    const result = document.getElementById('result');
+
+    if (isNaN(a) || isNaN(b) || isNaN(c)) {
+      result.innerHTML = '⚠ Enter valid numbers for a, b, and c.';
+      result.className = 'result-box show';
+      return;
+    }
+    if (a === 0) {
+      result.innerHTML = '⚠ a cannot be 0 — that\'s not a quadratic, that\'s a linear equation. Come on.';
+      result.className = 'result-box show';
+      return;
+    }
+
+    const disc = b * b - 4 * a * c;
+    let html = `<strong>Equation:</strong> ${a}x² + (${b})x + (${c}) = 0\n`;
+    html += `<strong>Discriminant (Δ):</strong> ${disc.toFixed(4)}\n\n`;
+
+    if (disc > 0) {
+      const x1 = (-b + Math.sqrt(disc)) / (2 * a);
+      const x2 = (-b - Math.sqrt(disc)) / (2 * a);
+      html += `<strong>Two distinct real roots:</strong>\n`;
+      html += `x₁ = ${x1.toFixed(6)}\n`;
+      html += `x₂ = ${x2.toFixed(6)}\n\n`;
+      html += `Sum = ${(x1+x2).toFixed(6)}  (= −b/a = ${(-b/a).toFixed(6)}  ✓)\n`;
+      html += `Product = ${(x1*x2).toFixed(6)}  (= c/a = ${(c/a).toFixed(6)}  ✓)`;
+    } else if (disc === 0) {
+      const x = -b / (2 * a);
+      html += `<strong>One repeated root:</strong>\n`;
+      html += `x = ${x.toFixed(6)} (double root)`;
+    } else {
+      const realPart = (-b / (2 * a)).toFixed(4);
+      const imagPart = (Math.sqrt(-disc) / (2 * a)).toFixed(4);
+      html += `<strong>No real roots — complex conjugate pair:</strong>\n`;
+      html += `x₁ = ${realPart} + ${imagPart}i\n`;
+      html += `x₂ = ${realPart} − ${imagPart}i`;
+    }
+
+    result.style.whiteSpace = 'pre';
+    result.innerHTML = html;
+    result.className = 'result-box show';
+  }
+
+  // ── Brain Transfer (The Prank) ──
+  const steps = [
+    'Initializing neural uplink...',
+    'Scanning cerebral cortex...',
+    'Locating math lobe...',
+    'Uploading quadratic formula...',
+    'Injecting discriminant knowledge...',
+    'Calibrating Vieta synapses...',
+    'Compressing IIT JEE prep data...',
+    'Transfer complete. Opening knowledge portal...'
+  ];
+
+  function transferKnowledge() {
+    const overlay = document.getElementById('overlay');
+    const status = document.getElementById('overlayStatus');
+    const fill = document.getElementById('progressFill');
+
+    overlay.classList.add('active');
+    fill.style.width = '0%';
+
+    let step = 0;
+    let progress = 0;
+
+    const stepInterval = setInterval(() => {
+      if (step < steps.length) {
+        status.textContent = steps[step];
+        step++;
+      }
+    }, 400);
+
+    const progressInterval = setInterval(() => {
+      progress += 1.5;
+      fill.style.width = Math.min(progress, 100) + '%';
+      if (progress >= 100) {
+        clearInterval(progressInterval);
+        clearInterval(stepInterval);
+        setTimeout(() => {
+          overlay.classList.remove('active');
+          window.open('https://www.youtube.com/watch?v=dQw4w9WgXcQ', '_blank');
+        }, 500);
+      }
+    }, 40);
+  }
+
+  // Enter key on solver inputs
+  ['coefA','coefB','coefC'].forEach(id => {
+    document.getElementById(id).addEventListener('keydown', e => {
+      if (e.key === 'Enter') solve();
+    });
+  });
+</script>
+</body>
+</html>
